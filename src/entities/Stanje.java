@@ -2,14 +2,12 @@ package entities;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -45,10 +43,8 @@ public class Stanje {
 	@JoinColumn(name = "korisnik_id")
 	private Korisnik korisnik;
 
-	@ManyToMany(cascade = { CascadeType.ALL })
-	@JoinTable(name = "stanje_transakcija", joinColumns = { @JoinColumn(name = "stanje_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "transakcija_id") })
-	List<Transakcija> transakcije;
+	@ManyToMany(mappedBy = "stanja")
+	private List<Transakcija> transakcije;
 
 	public int getId() {
 		return id;

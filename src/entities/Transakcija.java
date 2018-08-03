@@ -2,13 +2,14 @@ package entities;
 
 import java.util.List;
 
-import entities.Stanje;
-
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -27,9 +28,13 @@ public class Transakcija {
 	@Column(name="transakcija_id")
 	private int id;
 	
-	@ManyToMany(mappedBy = "transakcije")
-	@NotNull
-    private List<Stanje> stanja;
+	@ManyToMany(cascade = { CascadeType.ALL })
+	@JoinTable(	name = "stanje_transakcija", 
+				joinColumns = { @JoinColumn(name = "transakcija_id") }, 
+				inverseJoinColumns = { @JoinColumn(name = "stanje_id") })
+	private List<Stanje> stanja;
+	
+	
 	
 	@Column(name="iznos")
 	@NotNull
@@ -150,6 +155,7 @@ public class Transakcija {
 		List<Stanje> s = query.getResultList();
 		
 		this.setStanja(s);
+
 		session.save(this);
 		
 		session.getTransaction().commit();
