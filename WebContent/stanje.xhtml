@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<h:outputStylesheet name="css/menu.css" target="head" />
+</h:head>
+<body>
+	<div class="ui-g">
+		<p:growl id="messageGrowl" />
+
+		<!-- div za menu -->
+		<div class="ui-g-2">
+			<ui:include src="/partials/menu.xhtml" />
+		</div>
+
+		<!-- div za formu i ispis -->
+		<div class="ui-g-6">
+
+			<!--  forma za unos -->
+			<p:panel id="novoStanjeForma" header="Novo Stanje" toggleable="true" toggleSpeed="500" widgetVar="panel2" width="50%" style="margin-bottom:20px">
+				<h:form>
+					<div class="ui-g">
+						<div class="ui-g-6">
+							<h:outputLabel for="stanjeNaziv" value="Naziv:"
+								style="font-weight:bold" />
+							<br />
+							<p:inputText id="stanjeNaziv" value="#{stanjeBean.naziv}"
+								size="35" />
+						</div>
+						<div class="ui-g-5">
+							<h:outputLabel for="stanjePocetno" value="Početno stanje:"
+								style="font-weight:bold" />
+							<br />
+							<p:inputText id="stanjePocetno" type="number"
+								value="#{stanjeBean.pocetno}" />
+						</div>
+						<div class="ui-g-1">
+							<br />
+							<p:commandButton value="Unos" style="float:right;"
+								action="#{stanjeBean.noviUnos()}" update="messageGrowl" />
+						</div>
+					</div>
+				</h:form>
+
+			</p:panel>
+
+
+		</div>
+
+
+	</div>
+
+</body>
+</html>

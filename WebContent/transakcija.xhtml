@@ -1,0 +1,121 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<h:outputStylesheet name="css/menu.css" target="head" />
+</h:head>
+<body>
+
+	<div class="ui-g">
+		<p:growl id="messageGrowl" />
+
+		<!-- menu -->
+		<div class="ui-g-2">
+			<ui:include src="/partials/menu.xhtml" />
+		</div>
+
+		<!-- forma za novu transakciju -->
+		<div class="ui-g-8">
+			<h:form>
+				<f:passThroughAttribute name="autocomplete" value="off" />
+				<div class="ui-g">
+					<!-- uplatnica -->
+					<div class="ui-g-8">
+						<p:panel id="transakcijaForma" header="Novi Račun"
+							toggleable="true" toggleSpeed="500" widgetVar="panel1"
+							style="margin-bottom:20px">
+
+							<div class="ui-g">
+								<div class="ui-g-6">
+									<h:outputLabel for="platitelj" value="Platitelj:"
+										style="font-weight:bold" />
+									<br />
+									<p:inputTextarea id="platitelj" rows="3" cols="30"
+										value="#{transakcijaBean.platitelj}" autoResize="true" />
+									<br /> <br />
+
+									<h:outputLabel for="primatelj" value="Primatelj:"
+										style="font-weight:bold" />
+									<br />
+									<p:inputTextarea id="primatelj" rows="3" cols="30"
+										value="#{transakcijaBean.primatelj}" autoResize="true" />
+									<br /> <br />
+
+									<h:outputLabel for="model" value="Model:"
+										style="font-weight:bold" />
+									<p:inputText id="model" size="2"
+										value="#{transakcijaBean.model}" />
+									<br /> <br />
+
+									<h:outputLabel for="primateljRacun"
+										value="Broj računa primatelja:" style="font-weight:bold" />
+									<br />
+									<p:inputText id="primateljRacun" size="30"
+										value="#{transakcijaBean.primateljRacun}" />
+									<br /> <br />
+								</div>
+								<div class="ui-g-6">
+									<h:outputLabel for="brojOdobrenja"
+										value="Poziv na broj odobrenja:" style="font-weight:bold" />
+									<br />
+									<p:inputText id="brojOdobrenja" size="30"
+										value="#{transakcijaBean.brojOdobrenja}" />
+									<br /> <br />
+
+									<h:outputLabel for="iznos" value="Iznos:"
+										style="font-weight:bold" />
+									<br />
+									<p:inputText id="iznos" size="30" type="number"
+										value="#{transakcijaBean.iznos}" />
+									<br /> <br />
+
+									<h:outputLabel for="opis" value="Opis plaćanja:"
+										style="font-weight:bold" />
+									<br />
+									<p:inputTextarea id="opis" rows="3" cols="30" autoResize="true"
+										value="#{transakcijaBean.opis}" />
+									<br /> <br />
+
+									<p:selectOneRadio id="tip" value="#{transakcijaBean.tip}"
+										layout="grid" columns="3">
+										<f:selectItem itemValue="Prihod" itemLabel="Prihod" />
+										<f:selectItem itemValue="Rashod" itemLabel="Rashod" />
+									</p:selectOneRadio>
+
+									<br /> <br />
+									
+									<p:commandButton value="Unos" style="float:right;"
+										action="#{transakcijaBean.unos()}" update="messageGrowl, tip" />
+
+								</div>
+							</div>
+
+
+						</p:panel>
+					</div>
+
+					<!-- popis stanja -->
+					<div class="ui-g-4">
+						<p:panel id="ispisStanja" header="Popis stanja" toggleable="true"
+							toggleSpeed="500" widgetVar="panel2" style="margin-bottom:20px">
+							<br />
+							<p:selectManyCheckbox id="basic"
+								value="#{transakcijaBean.odabranaStanja}" layout="pageDirection"
+								columns="1" autocomplete="off">
+
+								<f:selectItems value="#{transakcijaBean.listaStanja}" var="elem"
+									itemLabel="#{elem.naziv}" itemValue="#{elem.id}" />
+							</p:selectManyCheckbox>
+						</p:panel>
+					</div>
+				</div>
+			</h:form>
+		</div>
+
+	</div>
+</body>
+</html>

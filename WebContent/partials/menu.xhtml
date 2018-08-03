@@ -1,0 +1,49 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+	<p:panel id="menu" header="Menu" style="margin-bottom:20px;">
+		<br />
+		<h:outputText value="Moje transakcije" style="font-weight:bold" />
+		<br />
+		<h:link value="Dodaj novu transakciju" outcome="transakcija" class="menuItem" />
+		<br />
+		<br />
+		<h:outputText value="Moja stanja" style="font-weight:bold" /><br/>
+		<h:link value="Dodaj novo stanje" outcome="stanje" class="menuItem" />
+
+		<br />
+		<br />
+		<h:outputText value="Kontrole" style="font-weight:bold" />
+		<h:form>
+			<h:commandLink value="Odlogiraj se" action="#{login.logout}"
+				class="menuItem" />
+		</h:form>
+
+	</p:panel>
+
+
+</ui:composition>
+		
+		
+		<!-- 
+		<p:repeat value="#{menu.stanja}" var="s">
+			<p:accordionPanel
+				style="font-size:15px; margin-left:-5px; margin-right:-15px"
+				activeIndex="null">
+				<p:tab title="#{s.naziv}">
+					<h:form>
+						<p:commandLink id="ajax"
+							actionListener="#{upravljanjeStanje.brisi}"
+							update="menu, noviRacunForma">
+							<h:outputText value="Obriši" />
+							<f:param name="stanjeId" value="#{s.id}" />
+						</p:commandLink>
+					</h:form>
+				</p:tab>
+			</p:accordionPanel>
+		</p:repeat>
+		 -->
+		

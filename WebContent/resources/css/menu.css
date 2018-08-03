@@ -1,0 +1,10 @@
+@charset "ISO-8859-1";
+
+.menuItem {
+	cursor: pointer;
+	font-size: 15px;
+}
+
+.menuItem:hover {
+	background-color: cyan;
+}
