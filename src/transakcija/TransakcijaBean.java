@@ -140,6 +140,6 @@ public class TransakcijaBean implements Serializable{
 		Transakcija t = new Transakcija(iznos, platitelj, primatelj, model, primateljRacun, brojOdobrenja, opis);
 		
 		t.dodajNaStanja(odabranaStanja, korisnikId);
-		
+		Message.Display("Transakcija dodana.");
 	}
 }

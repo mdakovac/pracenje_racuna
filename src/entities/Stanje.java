@@ -1,5 +1,6 @@
 package entities;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -10,7 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
@@ -20,9 +24,8 @@ import org.hibernate.query.Query;
 import util.HibernateUtil;
 
 @Entity
-@Table(name = "stanje", uniqueConstraints = { 
-	@UniqueConstraint(columnNames = { "korisnik_id", "naziv" }, name="STANJE__KORISNIK_ID_NAZIV_UNIQUE") 
-})
+@Table(name = "stanje", uniqueConstraints = {
+		@UniqueConstraint(columnNames = { "korisnik_id", "naziv" }, name = "STANJE__KORISNIK_ID_NAZIV_UNIQUE") })
 public class Stanje {
 
 	@Id
@@ -45,6 +48,15 @@ public class Stanje {
 
 	@ManyToMany(mappedBy = "stanja")
 	private List<Transakcija> transakcije;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "vrijeme_unosa")
+	private Date vrijemeUnosa;
+
+	@PrePersist
+	protected void onCreate() {
+		vrijemeUnosa = new Date();
+	}
 
 	public int getId() {
 		return id;
@@ -84,6 +96,14 @@ public class Stanje {
 
 	public void setPocetnoStanje(float pocetnoStanje) {
 		this.pocetnoStanje = pocetnoStanje;
+	}
+
+	public Date getVrijemeUnosa() {
+		return vrijemeUnosa;
+	}
+
+	public void setVrijemeUnosa(Date vrijemeUnosa) {
+		this.vrijemeUnosa = vrijemeUnosa;
 	}
 
 	public Stanje() {

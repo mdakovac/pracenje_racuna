@@ -1,5 +1,6 @@
 package entities;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -11,7 +12,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.Session;
@@ -33,9 +37,7 @@ public class Transakcija {
 				joinColumns = { @JoinColumn(name = "transakcija_id") }, 
 				inverseJoinColumns = { @JoinColumn(name = "stanje_id") })
 	private List<Stanje> stanja;
-	
-	
-	
+		
 	@Column(name="iznos")
 	@NotNull
 	private float iznos;
@@ -57,6 +59,15 @@ public class Transakcija {
 	
 	@Column(name="opis")
 	private String opis;
+	
+	@Column(name = "vrijeme_unosa")
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date vrijemeUnosa;
+	
+	@PrePersist
+	protected void onCreate() {
+		vrijemeUnosa = new Date();
+	}
 
 	public int getId() {
 		return id;

@@ -62,10 +62,14 @@ public class StanjeBean {
 			
 			String n = e.getConstraintName();
 			
-			if(n.equals("STANJE__KORISNIK_ID_NAZIV_UNIQUE"))
+			if(n.equals("STANJE__KORISNIK_ID_NAZIV_UNIQUE")) {
 				Message.Display("Stanje s ovim imenom već postoji.");
+				return;
+			}
+				
 		}
 		
+		Message.Display("Stanje dodano.");		
 	}
 
 	public void brisi() {
