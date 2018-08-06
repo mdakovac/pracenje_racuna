@@ -161,14 +161,14 @@ public class Stanje {
 		session.beginTransaction();
 		
 		// obrisi dano stanje iz stanje_transakcija
-		Query qu = session.createNativeQuery("DELETE FROM stanje_transakcija WHERE stanje_id = ?");
+		Query<?> qu = session.createNativeQuery("DELETE FROM stanje_transakcija WHERE stanje_id = ?");
 		qu.setParameter(1, stanjeId);
 		qu.executeUpdate();
 		
 		// obrisi transakcije koje su samo na danom stanju
 		if(!transakcijeId.isEmpty()) {
 			qu = session.createQuery("delete from Transakcija where transakcija_id in (?1)");
-			qu.setParameter(1, transakcijeId);//setParameterList(1, transakcijeId);
+			qu.setParameter(1, transakcijeId);
 			qu.executeUpdate();
 		}
 		
