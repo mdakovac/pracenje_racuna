@@ -3,7 +3,6 @@ package entities;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -32,7 +31,7 @@ public class Transakcija {
 	@Column(name="transakcija_id")
 	private int id;
 	
-	@ManyToMany(cascade = { CascadeType.ALL })
+	@ManyToMany
 	@JoinTable(	name = "stanje_transakcija", 
 				joinColumns = { @JoinColumn(name = "transakcija_id") }, 
 				inverseJoinColumns = { @JoinColumn(name = "stanje_id") })
@@ -67,6 +66,10 @@ public class Transakcija {
 	@PrePersist
 	protected void onCreate() {
 		vrijemeUnosa = new Date();
+	}
+	
+	public Transakcija() {
+		
 	}
 
 	public int getId() {

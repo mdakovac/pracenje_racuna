@@ -126,13 +126,58 @@ public class Stanje {
 	public static List<Stanje> find(int korisnikId) {
 		Session session = HibernateUtil.getSession();
 
-		Query<Stanje> query = session.createQuery("from Stanje where korisnik_id=?1", Stanje.class);
+		Query<Stanje> query = session.createQuery("from Stanje where korisnik_id=?1 order by vrijeme_unosa DESC", Stanje.class);
 		query.setParameter(1, korisnikId);
 		List<Stanje> stanjeList = query.list();
 
 		session.close();
 
 		return stanjeList;
+	}
+	
+	public static void drop(int stanjeId) {
+		Session session = HibernateUtil.getSession();
+		
+		// pronadi sve transakcije koje su samo na danom stanju
+		// ako je transakcija na nekom stanju osim danog, ovaj query ju ne vraća
+		Query<Integer> q = session.createNativeQuery("SELECT" + 
+				"    st.transakcija_id " + 
+				"FROM" + 
+				"    stanje_transakcija st " + 
+				"JOIN transakcija t ON" + 
+				"    st.transakcija_id = t.transakcija_id " + 
+				"JOIN stanje_transakcija st2 ON" + 
+				"    t.transakcija_id = st2.transakcija_id " + 
+				"WHERE" + 
+				"    st2.stanje_id = ?1 " + 
+				"GROUP BY" + 
+				"    st.transakcija_id " + 
+				"HAVING" + 
+				"    COUNT(st.stanje_id) = 1", Integer.class);
+		q.setParameter(1, stanjeId);
+		
+		List<Integer> transakcijeId = q.getResultList();
+		
+		session.beginTransaction();
+		
+		// obrisi dano stanje iz stanje_transakcija
+		Query qu = session.createNativeQuery("DELETE FROM stanje_transakcija WHERE stanje_id = ?");
+		qu.setParameter(1, stanjeId);
+		qu.executeUpdate();
+		
+		// obrisi transakcije koje su samo na danom stanju
+		if(!transakcijeId.isEmpty()) {
+			qu = session.createQuery("delete from Transakcija where transakcija_id in (?1)");
+			qu.setParameter(1, transakcijeId);//setParameterList(1, transakcijeId);
+			qu.executeUpdate();
+		}
+		
+		// obrisi dano stanje
+		session.delete(session.load(Stanje.class, stanjeId));
+		
+		session.getTransaction().commit();
+		
+		session.close();
 	}
 
 }

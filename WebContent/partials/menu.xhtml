@@ -11,8 +11,16 @@
 		<h:link value="Dodaj novu transakciju" outcome="transakcija" class="menuItem" />
 		<br />
 		<br />
-		<h:outputText value="Moja stanja" style="font-weight:bold" /><br/>
-		<h:link value="Dodaj novo stanje" outcome="stanje" class="menuItem" />
+		<h:link value="Moja stanja" outcome="stanje" style="text-decoration: none; font-weight:bold">
+			<f:param name="form" value="true" />
+			<f:param name="list" value="true" />
+		</h:link><br/>
+		<h:link value="Dodaj novo stanje" outcome="stanje" class="menuItem">
+			<f:param name="form" value="true" />
+		</h:link><br/>
+		<h:link value="Pregled stanja" outcome="stanje?list=true" class="menuItem">
+			<f:param name="list" value="true" />
+		</h:link>
 
 		<br />
 		<br />

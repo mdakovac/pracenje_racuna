@@ -17,11 +17,13 @@
 			<ui:include src="/partials/menu.xhtml" />
 		</div>
 
-		<!-- div za formu i ispis -->
+		<!--  div za formu i ispis  -->
 		<div class="ui-g-6">
 
-			<!--  forma za unos -->
-			<p:panel id="novoStanjeForma" header="Novo Stanje" toggleable="true" toggleSpeed="500" widgetVar="panel2" width="50%" style="margin-bottom:20px">
+			<!--  forma za unos  -->
+			<p:panel id="novoStanjeForma" header="Novo Stanje" toggleable="true"
+				toggleSpeed="500" widgetVar="panel2" width="50%"
+				rendered="#{param['form'] eq true}" style="margin-bottom:20px">
 				<h:form>
 					<div class="ui-g">
 						<div class="ui-g-6">
@@ -37,21 +39,62 @@
 							<br />
 							<p:inputText id="stanjePocetno" type="number"
 								value="#{stanjeBean.pocetno}" />
+							<input type="hidden" name="form" value="true" /> <input
+								type="hidden" name="list" value="true" />
 						</div>
 						<div class="ui-g-1">
 							<br />
 							<p:commandButton value="Unos" style="float:right;"
-								action="#{stanjeBean.noviUnos()}" update="messageGrowl" />
+								action="#{stanjeBean.noviUnos()}"
+								update="messageGrowl, listaStanjaGrid">
+							</p:commandButton>
 						</div>
 					</div>
 				</h:form>
 
 			</p:panel>
 
+			<!--  popis stanja  -->
+			<p:dataGrid var="stanje" value="#{stanjeBean.listaStanja}"
+				rendered="#{param['list'] eq true}" columns="3" layout="grid"
+				rows="12" paginator="true" id="listaStanjaGrid"
+				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+				rowsPerPageTemplate="6,12,16">
+
+				<f:facet name="header">
+            		Popis Stanja
+        		</f:facet>
+
+				<p:panel header="#{stanje.naziv} " style="text-align:center">
+
+					<h:panelGrid columns="1"
+						style="width:100%; text-align:left; font-size:15px">
+						<h:form>
+							<h:outputText value="Id: #{stanje.id}" />
+							<br/>
+							<h:outputText value="Početno stanje: #{stanje.pocetnoStanje}" />
+							<br />
+							<br/>
+							<h:outputText value="Datum i vrijeme dodavanja:" /><br/>
+							<h:outputText value="#{stanje.vrijemeUnosa}" />
+							<br /><br/>
+							<input type="hidden" name="list" value="true" />
+
+
+							<p:commandButton value="Obriši" style="float:right;"
+								action="#{stanjeBean.brisi()}"
+								update="messageGrowl, listaStanjaGrid">
+								<f:param name="stanjeId" value="#{stanje.id}" />
+							</p:commandButton>
+
+							<p:commandButton value="Detaljnije" style="float:left;"
+								action="#{stanjeBean.noviUnos()}" update="messageGrowl" />
+						</h:form>
+					</h:panelGrid>
+				</p:panel>
+			</p:dataGrid>
 
 		</div>
-
-
 	</div>
 
 </body>

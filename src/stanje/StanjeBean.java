@@ -1,5 +1,6 @@
 package stanje;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
@@ -18,11 +19,20 @@ public class StanjeBean {
 	private String naziv;
 	private float pocetno = 0;
 	
-	private int userId;
+	private List<Stanje> listaStanja;
+
+	private int korisnikId;
 
 	public StanjeBean() {
-		FacesContext context = FacesContext.getCurrentInstance();
-		userId = (int) context.getExternalContext().getSessionMap().get("id");
+		updateListaStanja();
+	}
+
+	public List<Stanje> getListaStanja() {
+		return listaStanja;
+	}
+
+	public void setListaStanja(List<Stanje> listaStanja) {
+		this.listaStanja = listaStanja;
 	}
 
 	public String getNaziv() {
@@ -40,9 +50,16 @@ public class StanjeBean {
 	public void setPocetno(float pocetno) {
 		this.pocetno = pocetno;
 	}
+	
+	public int getKorisnikId() {
+		return korisnikId;
+	}
+
+	public void setKorisnikId(int korisnikId) {
+		this.korisnikId = korisnikId;
+	}
 
 	public void noviUnos() {
-
 		if (naziv.length() <= 0) {
 			Message.Display("Naziv ne može biti prazan");
 			return;
@@ -50,7 +67,7 @@ public class StanjeBean {
 		
 		Session session = HibernateUtil.getSession();
 		
-		Korisnik k = session.get(Korisnik.class, userId);
+		Korisnik k = session.load(Korisnik.class, korisnikId);
 		Stanje s = new Stanje(naziv, k, pocetno);
 
 		try {
@@ -69,22 +86,25 @@ public class StanjeBean {
 				
 		}
 		
-		Message.Display("Stanje dodano.");		
+		Message.Display("Stanje dodano.");	
+		updateListaStanja();
+	}
+	
+	private void updateListaStanja() {
+		FacesContext context = FacesContext.getCurrentInstance();
+		korisnikId = (int) context.getExternalContext().getSessionMap().get("id");
+		
+		listaStanja = Stanje.find(korisnikId);
 	}
 
 	public void brisi() {
-		System.out.println("Brisem.");
+		System.out.println("brisanje called");
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		int id = Integer.parseInt(params.get("stanjeId"));
 
-		Session session = HibernateUtil.getSession();
-
-		session.beginTransaction();
-		Stanje s = session.load(Stanje.class, id);
-		session.delete(s);
-		session.getTransaction().commit();
-		session.close();
+		Stanje.drop(id);
 		
+		updateListaStanja();
 	}
 	
 }
