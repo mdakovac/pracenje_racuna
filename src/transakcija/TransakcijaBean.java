@@ -8,6 +8,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.RequestScoped;
 import javax.faces.context.FacesContext;
 
+import additionalTypes.ObradenoStanje;
 import entities.Stanje;
 import entities.Transakcija;
 import util.Message;
@@ -30,7 +31,7 @@ public class TransakcijaBean implements Serializable{
 	private String opis = "";
 	private String tip = "Prihod";
 	
-	private List<Stanje> listaStanja;
+	private List<ObradenoStanje> listaStanja;
 	private List<String> odabranaStanja;
 	
 	private int korisnikId;
@@ -44,7 +45,7 @@ public class TransakcijaBean implements Serializable{
 		//System.out.println("Odabrana stanja al iz konstruktora: " + odabranaStanja);
 		FacesContext context = FacesContext.getCurrentInstance();
 		korisnikId = (int) context.getExternalContext().getSessionMap().get("id");
-		listaStanja = Stanje.find(korisnikId);
+		listaStanja = Stanje.findAll(korisnikId);
 	}
 	
 	public float getIznos() {
@@ -111,11 +112,11 @@ public class TransakcijaBean implements Serializable{
 		this.tip = tip;
 	}
 	
-	public List<Stanje> getListaStanja() {
+	public List<ObradenoStanje> getListaStanja() {
 		return listaStanja;
 	}
-
-	public void setListaStanja(List<Stanje> listaStanja) {
+	
+	public void setListaStanja(List<ObradenoStanje> listaStanja) {
 		this.listaStanja = listaStanja;
 	}
 
@@ -136,6 +137,11 @@ public class TransakcijaBean implements Serializable{
 			Message.Display("Odaberite stanje za transakciju");
 			return;
 		}
+		
+		if(tip.equals("Rashod")) {
+			iznos *= -1;
+		}
+		
 		
 		Transakcija t = new Transakcija(iznos, platitelj, primatelj, model, primateljRacun, brojOdobrenja, opis);
 		

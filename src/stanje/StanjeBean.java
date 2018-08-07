@@ -1,5 +1,6 @@
 package stanje;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -8,7 +9,9 @@ import javax.faces.context.FacesContext;
 
 import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
+import org.hibernate.query.Query;
 
+import additionalTypes.ObradenoStanje;
 import entities.Korisnik;
 import entities.Stanje;
 import util.HibernateUtil;
@@ -19,7 +22,7 @@ public class StanjeBean {
 	private String naziv;
 	private float pocetno = 0;
 	
-	private List<Stanje> listaStanja;
+	private List<ObradenoStanje> listaStanja = new ArrayList<ObradenoStanje>();
 
 	private int korisnikId;
 
@@ -27,11 +30,11 @@ public class StanjeBean {
 		updateListaStanja();
 	}
 
-	public List<Stanje> getListaStanja() {
+	public List<ObradenoStanje> getListaStanja() {
 		return listaStanja;
 	}
 
-	public void setListaStanja(List<Stanje> listaStanja) {
+	public void setListaStanja(List<ObradenoStanje> listaStanja) {
 		this.listaStanja = listaStanja;
 	}
 
@@ -72,12 +75,19 @@ public class StanjeBean {
 
 		try {
 			session.beginTransaction();
+			
 			session.save(s);
+			
+			Query<?> q = session.createNativeQuery("INSERT INTO stanje_transakcija (stanje_id, transakcija_id) VALUES (?1, 1)");
+			q.setParameter(1, s.getId());
+			q.executeUpdate();
+			
 			session.getTransaction().commit();
-			session.close();
+			
 		}catch(ConstraintViolationException e) {
 			
 			String n = e.getConstraintName();
+			session.close();
 			
 			if(n.equals("STANJE__KORISNIK_ID_NAZIV_UNIQUE")) {
 				Message.Display("Stanje s ovim imenom već postoji.");
@@ -85,6 +95,7 @@ public class StanjeBean {
 			}
 				
 		}
+		session.close();
 		
 		Message.Display("Stanje dodano.");	
 		updateListaStanja();
@@ -93,18 +104,17 @@ public class StanjeBean {
 	private void updateListaStanja() {
 		FacesContext context = FacesContext.getCurrentInstance();
 		korisnikId = (int) context.getExternalContext().getSessionMap().get("id");
-		
-		listaStanja = Stanje.find(korisnikId);
+
+		listaStanja = Stanje.findAll(korisnikId);
 	}
 
 	public void brisi() {
-		System.out.println("brisanje called");
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		int id = Integer.parseInt(params.get("stanjeId"));
 
 		Stanje.drop(id);
 		
 		updateListaStanja();
+		Message.Display("Stanje obrisano.");	
 	}
-	
 }

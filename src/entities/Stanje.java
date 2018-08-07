@@ -1,5 +1,6 @@
 package entities;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import additionalTypes.ObradenoStanje;
 import util.HibernateUtil;
 
 @Entity
@@ -123,16 +125,35 @@ public class Stanje {
 		this.korisnik = korisnik;
 	}
 
-	public static List<Stanje> find(int korisnikId) {
+	public static List<ObradenoStanje> findAll(int korisnikId) {
 		Session session = HibernateUtil.getSession();
 
-		Query<Stanje> query = session.createQuery("from Stanje where korisnik_id=?1 order by vrijeme_unosa DESC", Stanje.class);
+		Query<Object[]> query = session.createNativeQuery("select t2.stanje_id, t2.naziv, t2.pocetno_stanje, t2.vrijeme_unosa, SUM(t.iznos) " + 
+				"from transakcija t " + 
+				"INNER JOIN stanje_transakcija t1 on t.transakcija_id = t1.transakcija_id " + 
+				"INNER JOIN stanje t2 on t2.stanje_id = t1.stanje_id " + 
+				"WHERE korisnik_id=?1 " + 
+				"GROUP BY t2.stanje_id, t2.naziv", Object[].class);
 		query.setParameter(1, korisnikId);
-		List<Stanje> stanjeList = query.list();
-
+		
+		List<Object[]> l = query.list();
 		session.close();
+		
+		
+		List<ObradenoStanje> listaStanja = new ArrayList<ObradenoStanje>();
 
-		return stanjeList;
+		for (Object[] element : l) {
+			ObradenoStanje os = new ObradenoStanje();
+			os.setId((int)element[0]);
+			os.setNaziv((String)element[1]);
+			os.setPocetnoStanje((float)element[2]);
+			os.setTrenutnoStanje((double)element[4]);
+		    os.setVrijemeUnosa((Date)element[3]);
+		    
+		    listaStanja.add(os);
+		}
+
+		return listaStanja;
 	}
 	
 	public static void drop(int stanjeId) {
@@ -179,5 +200,6 @@ public class Stanje {
 		
 		session.close();
 	}
+	
 
 }
