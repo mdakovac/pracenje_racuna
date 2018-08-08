@@ -10,7 +10,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
 
 import entities.Transakcija;
-import sessionScope.SessionVars;
+import session.SessionVars;
 import util.Message;
 
 @ManagedBean(name="transakcijaBean")

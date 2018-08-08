@@ -8,7 +8,7 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 
 import entities.Stanje;
-import sessionScope.SessionVars;
+import session.SessionVars;
 import util.Message;
 
 @ManagedBean(name = "stanjeBean")

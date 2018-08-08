@@ -1,4 +1,4 @@
-package sessionScope;
+package session;
 
 import java.util.List;
 
