@@ -57,15 +57,18 @@ public class LoginBean {
 
 		if (u.size() == 0) {
 			Message.Display("Netocni podaci.");
+			session.close();
 			return "index";
 		}
 
 		if (BCrypt.checkpw(this.password.trim(), u.get(0).getLozinka().trim())) {
 			context.getExternalContext().getSessionMap().put("id", u.get(0).getId());
+			session.close();
 			return "transakcija?faces-redirect=true";
 		} else {
 			Message.Display("Netocni podaci");
 		}
+		session.close();
 		return "index";
 	}
 

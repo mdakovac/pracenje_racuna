@@ -1,5 +1,6 @@
 package entities;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class Transakcija {
 		
 	@Column(name="iznos")
 	@NotNull
-	private float iznos;
+	private BigDecimal iznos;
 	
 	@Column(name="platitelj")
 	private String platitelj;
@@ -88,11 +89,11 @@ public class Transakcija {
 		this.stanja = stanja;
 	}
 
-	public float getIznos() {
+	public BigDecimal getIznos() {
 		return iznos;
 	}
 
-	public void setIznos(float iznos) {
+	public void setIznos(BigDecimal iznos) {
 		this.iznos = iznos;
 	}
 
@@ -144,7 +145,7 @@ public class Transakcija {
 		this.opis = opis;
 	}
 
-	public Transakcija(@NotNull float iznos, String platitelj, String primatelj,
+	public Transakcija(@NotNull BigDecimal iznos, String platitelj, String primatelj,
 			String model, String primateljRacun, String brojOdobrenja, String opis, List<Stanje> stanja) {
 		super();
 		this.iznos = iznos;
@@ -157,7 +158,7 @@ public class Transakcija {
 		this.stanja = stanja;
 	}
 	
-	public static void save(List<String> odabranaStanja, int korisnikId, float iznos, String platitelj, String primatelj, String model, String primateljRacun, String brojOdobrenja, String opis) {
+	public static void save(List<String> odabranaStanja, int korisnikId, BigDecimal iznos, String platitelj, String primatelj, String model, String primateljRacun, String brojOdobrenja, String opis) {
 		Session session = HibernateUtil.getSession();
 		
 		session.beginTransaction();

@@ -1,5 +1,6 @@
 package stanje;
 
+import java.math.BigDecimal;
 import java.util.Map;
 
 import javax.faces.bean.ManagedBean;
@@ -13,13 +14,12 @@ import util.Message;
 @ManagedBean(name = "stanjeBean")
 public class StanjeBean {
 	private String naziv;
-	private float pocetno = 0;
+	private BigDecimal pocetno = BigDecimal.ZERO;;
 	
 	@ManagedProperty(value = "#{sessionVarsBean}")
 	SessionVars sessionVars;
 
 	public StanjeBean() {
-		sessionVars.updateListaStanja();
 	}
 	
 	public String getNaziv() {
@@ -28,10 +28,10 @@ public class StanjeBean {
 	public void setNaziv(String naziv) {
 		this.naziv = naziv.trim();
 	}
-	public float getPocetno() {
+	public BigDecimal getPocetno() {
 		return pocetno;
 	}
-	public void setPocetno(float pocetno) {
+	public void setPocetno(BigDecimal pocetno) {
 		this.pocetno = pocetno;
 	}
 	public SessionVars getSessionVars() {

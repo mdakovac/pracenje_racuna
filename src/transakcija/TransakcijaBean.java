@@ -1,6 +1,7 @@
 package transakcija;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -21,7 +22,7 @@ public class TransakcijaBean implements Serializable{
 	 */
 	private static final long serialVersionUID = 3306368693592000870L;
 	
-	private float iznos;
+	private BigDecimal iznos = BigDecimal.ZERO;
 	private String platitelj = "";
 	private String primatelj= "";
 	private String model = "";
@@ -43,10 +44,10 @@ public class TransakcijaBean implements Serializable{
 	public TransakcijaBean() {
 	}
 	
-	public float getIznos() {
+	public BigDecimal getIznos() {
 		return iznos;
 	}
-	public void setIznos(float iznos) {
+	public void setIznos(BigDecimal iznos) {
 		this.iznos = iznos;
 	}
 	public String getPlatitelj() {
@@ -106,7 +107,7 @@ public class TransakcijaBean implements Serializable{
 
 	public void unos() {
 		// iznos ne moze biti 0 ili manji
-		if(this.iznos <= 0) {
+		if(iznos.compareTo(BigDecimal.ZERO) <= 0) {
 			Message.Display("Nevažeći iznos");
 			return;
 		}
@@ -117,11 +118,12 @@ public class TransakcijaBean implements Serializable{
 		}
 		// prebaci u negativne ako je rashod
 		if(tip.equals("Rashod")) {
-			iznos *= -1;
+			iznos = iznos.negate();
 		}
 		
 		// spremi i vrati poruku
 		Transakcija.save(odabranaStanja, sessionVars.getKorisnikId(), iznos, platitelj, primatelj, model, primateljRacun, brojOdobrenja, opis);
 		Message.Display("Transakcija dodana.");
+		sessionVars.updateListaStanja();
 	}
 }

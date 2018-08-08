@@ -109,11 +109,13 @@ public class RegisterBean {
 				Message.Display("Korisnik s ovim korisničkim imenom već postoji.");
 			else if(n.equals("KORISNIK__EMAIL_UNIQUE"))
 				Message.Display("Korisnik s ovim E-mailom već postoji.");
+			
+			session.close();
 			return "index";
 		}
 		
 		Message.Display("Korisnik dodan. Sada se možete logirati.");
-
+		session.close();
 		return "index";
 
 		/*

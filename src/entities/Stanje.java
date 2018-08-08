@@ -1,5 +1,6 @@
 package entities;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,7 +44,7 @@ public class Stanje {
 
 	@Column(name = "pocetno_stanje")
 	@NotNull
-	private float pocetnoStanje = 0;
+	private BigDecimal pocetnoStanje;
 
 	@ManyToOne
 	@NotNull
@@ -90,10 +91,10 @@ public class Stanje {
 	public void setTransakcije(List<Transakcija> transakcije) {
 		this.transakcije = transakcije;
 	}
-	public float getPocetnoStanje() {
+	public BigDecimal getPocetnoStanje() {
 		return pocetnoStanje;
 	}
-	public void setPocetnoStanje(float pocetnoStanje) {
+	public void setPocetnoStanje(BigDecimal pocetnoStanje) {
 		this.pocetnoStanje = pocetnoStanje;
 	}
 	public Date getVrijemeUnosa() {
@@ -104,7 +105,7 @@ public class Stanje {
 	}
 	
 
-	public Stanje(@NotNull String naziv, @NotNull Korisnik korisnik, @NotNull float pocetnoStanje) {
+	public Stanje(@NotNull String naziv, @NotNull Korisnik korisnik, @NotNull BigDecimal pocetnoStanje) {
 		super();
 		this.naziv = naziv;
 		this.pocetnoStanje = pocetnoStanje;
@@ -137,8 +138,8 @@ public class Stanje {
 			ObradenoStanje os = new ObradenoStanje();
 			os.setId((int) element[0]);
 			os.setNaziv((String) element[1]);
-			os.setPocetnoStanje((float) element[2]);
-			os.setTrenutnoStanje((double) element[4]);
+			os.setPocetnoStanje(new BigDecimal(element[2].toString()));
+			os.setTrenutnoStanje(new BigDecimal(element[4].toString()));
 			os.setVrijemeUnosa((Date) element[3]);
 
 			listaStanja.add(os);
@@ -184,7 +185,7 @@ public class Stanje {
 		session.close();
 	}
 
-	public static int save(String naziv, float pocetnoStanje, int korisnikId) {
+	public static int save(String naziv, BigDecimal pocetnoStanje, int korisnikId) {
 		Session session = HibernateUtil.getSession();
 
 		Korisnik k = session.load(Korisnik.class, korisnikId);

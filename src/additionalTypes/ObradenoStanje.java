@@ -1,12 +1,13 @@
 package additionalTypes;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class ObradenoStanje {
 	int id;
 	String naziv;
-	float pocetnoStanje;
-	double trenutnoStanje;
+	BigDecimal pocetnoStanje;
+	BigDecimal trenutnoStanje;
 	Date vrijemeUnosa;
 	
 	public int getId() {
@@ -21,16 +22,16 @@ public class ObradenoStanje {
 	public void setNaziv(String naziv) {
 		this.naziv = naziv;
 	}
-	public float getPocetnoStanje() {
+	public BigDecimal getPocetnoStanje() {
 		return pocetnoStanje;
 	}
-	public void setPocetnoStanje(float pocetnoStanje) {
+	public void setPocetnoStanje(BigDecimal pocetnoStanje) {
 		this.pocetnoStanje = pocetnoStanje;
 	}
-	public double getTrenutnoStanje() {
+	public BigDecimal getTrenutnoStanje() {
 		return trenutnoStanje;
 	}
-	public void setTrenutnoStanje(double trenutnoStanje) {
+	public void setTrenutnoStanje(BigDecimal trenutnoStanje) {
 		this.trenutnoStanje = trenutnoStanje;
 	}
 	public Date getVrijemeUnosa() {
