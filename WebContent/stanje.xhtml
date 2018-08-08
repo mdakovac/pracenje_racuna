@@ -55,7 +55,7 @@
 			</p:panel>
 
 			<!--  popis stanja  -->
-			<p:dataGrid var="stanje" value="#{stanjeBean.listaStanja}"
+			<p:dataGrid var="stanje" value="#{stanjeBean.sessionVars.listaStanja}"
 				rendered="#{param['list'] eq true}" columns="3" layout="grid"
 				rows="12" paginator="true" id="listaStanjaGrid"
 				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"

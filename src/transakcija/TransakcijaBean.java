@@ -5,12 +5,11 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
 
-import additionalTypes.ObradenoStanje;
-import entities.Stanje;
 import entities.Transakcija;
+import sessionScope.SessionVars;
 import util.Message;
 
 @ManagedBean(name="transakcijaBean")
@@ -31,10 +30,10 @@ public class TransakcijaBean implements Serializable{
 	private String opis = "";
 	private String tip = "Prihod";
 	
-	private List<ObradenoStanje> listaStanja;
 	private List<String> odabranaStanja;
 	
-	private int korisnikId;
+	@ManagedProperty(value = "#{sessionVarsBean}")
+	SessionVars sessionVars;
 
 	@PostConstruct
     public void init() {
@@ -42,110 +41,87 @@ public class TransakcijaBean implements Serializable{
     }
 	
 	public TransakcijaBean() {
-		//System.out.println("Odabrana stanja al iz konstruktora: " + odabranaStanja);
-		FacesContext context = FacesContext.getCurrentInstance();
-		korisnikId = (int) context.getExternalContext().getSessionMap().get("id");
-		listaStanja = Stanje.findAll(korisnikId);
 	}
 	
 	public float getIznos() {
 		return iznos;
 	}
-
 	public void setIznos(float iznos) {
 		this.iznos = iznos;
 	}
-	
 	public String getPlatitelj() {
 		return platitelj;
 	}
-
 	public void setPlatitelj(String platitelj) {
 		this.platitelj = platitelj;
 	}
-
 	public String getPrimatelj() {
 		return primatelj;
 	}
-
 	public void setPrimatelj(String primatelj) {
 		this.primatelj = primatelj;
 	}
-
 	public String getModel() {
 		return model;
 	}
-
 	public void setModel(String model) {
 		this.model = model;
 	}
-
 	public String getPrimateljRacun() {
 		return primateljRacun;
 	}
-
 	public void setPrimateljRacun(String primateljRacun) {
 		this.primateljRacun = primateljRacun;
 	}
-
 	public String getBrojOdobrenja() {
 		return brojOdobrenja;
 	}
-
 	public void setBrojOdobrenja(String brojOdobrenja) {
 		this.brojOdobrenja = brojOdobrenja;
 	}
-
 	public String getOpis() {
 		return opis;
 	}
-
 	public void setOpis(String opis) {
 		this.opis = opis;
 	}
-	
 	public String getTip() {
 		return tip;
 	}
-
 	public void setTip(String tip) {
 		this.tip = tip;
 	}
-	
-	public List<ObradenoStanje> getListaStanja() {
-		return listaStanja;
+	public SessionVars getSessionVars() {
+		return sessionVars;
 	}
-	
-	public void setListaStanja(List<ObradenoStanje> listaStanja) {
-		this.listaStanja = listaStanja;
+	public void setSessionVars(SessionVars sessionVars) {
+		this.sessionVars = sessionVars;
 	}
-
 	public List<String> getOdabranaStanja() {
 		return odabranaStanja;
 	}
-
 	public void setOdabranaStanja(List<String> odabranaStanja) {
 		this.odabranaStanja = odabranaStanja;
 	}
 
 	public void unos() {
+		// iznos ne moze biti 0 ili manji
 		if(this.iznos <= 0) {
 			Message.Display("Nevažeći iznos");
 			return;
 		}
+		// mora postojati stanje na koje ide transakcija
 		if(odabranaStanja.isEmpty()) {
 			Message.Display("Odaberite stanje za transakciju");
 			return;
 		}
-		
+		// prebaci u negativne ako je rashod
 		if(tip.equals("Rashod")) {
 			iznos *= -1;
 		}
 		
-		
-		Transakcija t = new Transakcija(iznos, platitelj, primatelj, model, primateljRacun, brojOdobrenja, opis);
-		
-		t.dodajNaStanja(odabranaStanja, korisnikId);
+		// spremi i vrati poruku
+		Transakcija.save(odabranaStanja, sessionVars.getKorisnikId(), iznos, platitelj, primatelj, model, primateljRacun, brojOdobrenja, opis);
 		Message.Display("Transakcija dodana.");
 	}
 }

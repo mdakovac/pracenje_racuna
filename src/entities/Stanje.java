@@ -20,10 +20,12 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.Session;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
 
 import additionalTypes.ObradenoStanje;
 import util.HibernateUtil;
+import util.Message;
 
 @Entity
 @Table(name = "stanje", uniqueConstraints = {
@@ -59,58 +61,48 @@ public class Stanje {
 	protected void onCreate() {
 		vrijemeUnosa = new Date();
 	}
+	
+	public Stanje() {
+
+	}
 
 	public int getId() {
 		return id;
 	}
-
 	public void setId(int id) {
 		this.id = id;
 	}
-
 	public String getNaziv() {
 		return naziv;
 	}
-
 	public void setNaziv(String naziv) {
 		this.naziv = naziv;
 	}
-
 	public Korisnik getKorisnik() {
 		return korisnik;
 	}
-
 	public void setKorisnik(Korisnik korisnik) {
 		this.korisnik = korisnik;
 	}
-
 	public List<Transakcija> getTransakcije() {
 		return transakcije;
 	}
-
 	public void setTransakcije(List<Transakcija> transakcije) {
 		this.transakcije = transakcije;
 	}
-
 	public float getPocetnoStanje() {
 		return pocetnoStanje;
 	}
-
 	public void setPocetnoStanje(float pocetnoStanje) {
 		this.pocetnoStanje = pocetnoStanje;
 	}
-
 	public Date getVrijemeUnosa() {
 		return vrijemeUnosa;
 	}
-
 	public void setVrijemeUnosa(Date vrijemeUnosa) {
 		this.vrijemeUnosa = vrijemeUnosa;
 	}
-
-	public Stanje() {
-
-	}
+	
 
 	public Stanje(@NotNull String naziv, @NotNull Korisnik korisnik, @NotNull float pocetnoStanje) {
 		super();
@@ -128,78 +120,100 @@ public class Stanje {
 	public static List<ObradenoStanje> findAll(int korisnikId) {
 		Session session = HibernateUtil.getSession();
 
-		Query<Object[]> query = session.createNativeQuery("select t2.stanje_id, t2.naziv, t2.pocetno_stanje, t2.vrijeme_unosa, SUM(t.iznos) " + 
-				"from transakcija t " + 
-				"INNER JOIN stanje_transakcija t1 on t.transakcija_id = t1.transakcija_id " + 
-				"INNER JOIN stanje t2 on t2.stanje_id = t1.stanje_id " + 
-				"WHERE korisnik_id=?1 " + 
-				"GROUP BY t2.stanje_id, t2.naziv", Object[].class);
+		Query<Object[]> query = session
+				.createNativeQuery("select t2.stanje_id, t2.naziv, t2.pocetno_stanje, t2.vrijeme_unosa, SUM(t.iznos) "
+						+ "from transakcija t "
+						+ "INNER JOIN stanje_transakcija t1 on t.transakcija_id = t1.transakcija_id "
+						+ "INNER JOIN stanje t2 on t2.stanje_id = t1.stanje_id " + "WHERE korisnik_id=?1 "
+						+ "GROUP BY t2.stanje_id, t2.naziv", Object[].class);
 		query.setParameter(1, korisnikId);
-		
+
 		List<Object[]> l = query.list();
 		session.close();
-		
-		
+
 		List<ObradenoStanje> listaStanja = new ArrayList<ObradenoStanje>();
 
 		for (Object[] element : l) {
 			ObradenoStanje os = new ObradenoStanje();
-			os.setId((int)element[0]);
-			os.setNaziv((String)element[1]);
-			os.setPocetnoStanje((float)element[2]);
-			os.setTrenutnoStanje((double)element[4]);
-		    os.setVrijemeUnosa((Date)element[3]);
-		    
-		    listaStanja.add(os);
+			os.setId((int) element[0]);
+			os.setNaziv((String) element[1]);
+			os.setPocetnoStanje((float) element[2]);
+			os.setTrenutnoStanje((double) element[4]);
+			os.setVrijemeUnosa((Date) element[3]);
+
+			listaStanja.add(os);
 		}
 
 		return listaStanja;
 	}
-	
+
 	public static void drop(int stanjeId) {
 		Session session = HibernateUtil.getSession();
-		
+
 		// pronadi sve transakcije koje su samo na danom stanju
 		// ako je transakcija na nekom stanju osim danog, ovaj query ju ne vraća
-		Query<Integer> q = session.createNativeQuery("SELECT" + 
-				"    st.transakcija_id " + 
-				"FROM" + 
-				"    stanje_transakcija st " + 
-				"JOIN transakcija t ON" + 
-				"    st.transakcija_id = t.transakcija_id " + 
-				"JOIN stanje_transakcija st2 ON" + 
-				"    t.transakcija_id = st2.transakcija_id " + 
-				"WHERE" + 
-				"    st2.stanje_id = ?1 " + 
-				"GROUP BY" + 
-				"    st.transakcija_id " + 
-				"HAVING" + 
-				"    COUNT(st.stanje_id) = 1", Integer.class);
+		Query<Integer> q = session.createNativeQuery(
+				"SELECT" + "    st.transakcija_id " + "FROM" + "    stanje_transakcija st " + "JOIN transakcija t ON"
+						+ "    st.transakcija_id = t.transakcija_id " + "JOIN stanje_transakcija st2 ON"
+						+ "    t.transakcija_id = st2.transakcija_id " + "WHERE" + "    st2.stanje_id = ?1 "
+						+ "GROUP BY" + "    st.transakcija_id " + "HAVING" + "    COUNT(st.stanje_id) = 1",
+				Integer.class);
 		q.setParameter(1, stanjeId);
-		
+
 		List<Integer> transakcijeId = q.getResultList();
-		
+
 		session.beginTransaction();
-		
+
 		// obrisi dano stanje iz stanje_transakcija
 		Query<?> qu = session.createNativeQuery("DELETE FROM stanje_transakcija WHERE stanje_id = ?");
 		qu.setParameter(1, stanjeId);
 		qu.executeUpdate();
-		
+
 		// obrisi transakcije koje su samo na danom stanju
-		if(!transakcijeId.isEmpty()) {
+		if (!transakcijeId.isEmpty()) {
 			qu = session.createQuery("delete from Transakcija where transakcija_id in (?1)");
 			qu.setParameter(1, transakcijeId);
 			qu.executeUpdate();
 		}
-		
+
 		// obrisi dano stanje
 		session.delete(session.load(Stanje.class, stanjeId));
-		
+
 		session.getTransaction().commit();
-		
+
 		session.close();
 	}
-	
 
+	public static int save(String naziv, float pocetnoStanje, int korisnikId) {
+		Session session = HibernateUtil.getSession();
+
+		Korisnik k = session.load(Korisnik.class, korisnikId);
+		Stanje s = new Stanje(naziv, k, pocetnoStanje);
+
+		try {
+			session.beginTransaction();
+
+			session.save(s);
+
+			Query<?> q = session.createNativeQuery("INSERT INTO stanje_transakcija (stanje_id, transakcija_id) VALUES (?1, 1)");
+			q.setParameter(1, s.getId());
+			q.executeUpdate();
+
+			session.getTransaction().commit();
+
+		} catch (ConstraintViolationException e) {
+
+			String n = e.getConstraintName();
+			session.close();
+
+			if (n.equals("STANJE__KORISNIK_ID_NAZIV_UNIQUE")) {
+				Message.Display("Stanje s ovim imenom već postoji.");
+				return -1;
+			}
+			return -2;
+
+		}
+		session.close();
+		return 0;
+	}
 }

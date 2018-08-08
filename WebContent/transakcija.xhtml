@@ -107,7 +107,7 @@
 								value="#{transakcijaBean.odabranaStanja}" layout="pageDirection"
 								columns="1" autocomplete="off">
 
-								<f:selectItems value="#{transakcijaBean.listaStanja}" var="elem"
+								<f:selectItems value="#{transakcijaBean.sessionVars.listaStanja}" var="elem"
 									itemLabel="#{elem.naziv}" itemValue="#{elem.id}" />
 							</p:selectManyCheckbox>
 						</p:panel>

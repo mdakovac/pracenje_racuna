@@ -145,7 +145,7 @@ public class Transakcija {
 	}
 
 	public Transakcija(@NotNull float iznos, String platitelj, String primatelj,
-			String model, String primateljRacun, String brojOdobrenja, String opis) {
+			String model, String primateljRacun, String brojOdobrenja, String opis, List<Stanje> stanja) {
 		super();
 		this.iznos = iznos;
 		this.platitelj = platitelj;
@@ -154,23 +154,23 @@ public class Transakcija {
 		this.primateljRacun = primateljRacun;
 		this.brojOdobrenja = brojOdobrenja;
 		this.opis = opis;
+		this.stanja = stanja;
 	}
 	
-	public void dodajNaStanja(List<String> listaStanjaId, int korisnikId) {
-		System.out.println(listaStanjaId);
+	public static void save(List<String> odabranaStanja, int korisnikId, float iznos, String platitelj, String primatelj, String model, String primateljRacun, String brojOdobrenja, String opis) {
 		Session session = HibernateUtil.getSession();
 		
 		session.beginTransaction();
 		
 		Query<Stanje> query = session.createQuery("from Stanje where stanje_id in (?0) and korisnik_id=?1", Stanje.class);
-		query.setParameter(0, listaStanjaId);
+		query.setParameter(0, odabranaStanja);
 		query.setParameter(1, korisnikId);
 		
 		List<Stanje> s = query.getResultList();
 		
-		this.setStanja(s);
+		Transakcija t = new Transakcija(iznos, platitelj, primatelj, model, primateljRacun, brojOdobrenja, opis, s);
 
-		session.save(this);
+		session.save(t);
 		
 		session.getTransaction().commit();
 		
