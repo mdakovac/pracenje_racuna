@@ -9,36 +9,36 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 
 import additionalTypes.ObradenoStanje;
-import entities.Stanje;
+import entities.Transakcija;
 import session.SessionVars;
+import util.Message;
 
 @ManagedBean(name = "detaljiBean")
 @ViewScoped
 public class DetaljiBean {
 	private ObradenoStanje stanjeZaPregled;
-	private Stanje stanje;
 
 	@ManagedProperty(value = "#{sessionVarsBean}")
 	private SessionVars sessionVars;
+	
+	private int index;
 
 	public DetaljiBean() {
-
+		
 	}
 	
 	// ManagedPropertyju se ne može pristupiti u konstruktoru
 	@PostConstruct
 	public void init() { // Note: method name is your choice.
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		int index = Integer.parseInt(params.get("index"));
-
-		stanjeZaPregled = sessionVars.getListaStanja().get(index);
+		index = Integer.parseInt(params.get("index"));
 		
-		updateStanje();
+		updateStanjeZaPregled();
 	}
 	
-	public void updateStanje() {
-		stanje = Stanje.get(stanjeZaPregled.getId());
-		stanje = Stanje.loadTransakcije(stanje);
+	private void updateStanjeZaPregled() {
+		stanjeZaPregled = sessionVars.getListaStanja().get(index);
+		stanjeZaPregled.loadTransakcije();
 	}
 
 	public ObradenoStanje getStanjeZaPregled() {
@@ -49,14 +49,6 @@ public class DetaljiBean {
 		this.stanjeZaPregled = stanjeZaPregled;
 	}
 
-	public Stanje getStanje() {
-		return stanje;
-	}
-
-	public void setStanje(Stanje stanje) {
-		this.stanje = stanje;
-	}
-
 	public SessionVars getSessionVars() {
 		return sessionVars;
 	}
@@ -65,6 +57,28 @@ public class DetaljiBean {
 		this.sessionVars = sessionVars;
 	}
 
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
+	}
+	
+	public void brisiTransakciju() {
+		// dohvati id stanja za brisanje iz POST requesta
+		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
+		int id = Integer.parseInt(params.get("transakcijaId"));
+
+		// izbrisi iz baze
+		Transakcija.drop(id);
+
+		// update i feedback
+		sessionVars.updateListaStanja();
+		Message.Display("Transakcija obrisana.");
+		
+		updateStanjeZaPregled();
+	}
 	
 
 }

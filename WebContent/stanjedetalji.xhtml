@@ -19,9 +19,10 @@
 		</div>
 
 		<!--  div za pregled detalja -->
-		<div class="ui-g-6" id="stanjeDetalji">
+		<div class="ui-g-6">
 
-			<p:panel id="basic" header="#{detaljiBean.stanjeZaPregled.naziv}"
+			<p:panel id="stanjeDetalji"
+				header="#{detaljiBean.stanjeZaPregled.naziv}"
 				style="margin-bottom:20px">
 				<h:outputText value="Id: #{detaljiBean.stanjeZaPregled.id}" />
 				<br />
@@ -38,7 +39,7 @@
 					value="Trenutno stanje: #{detaljiBean.stanjeZaPregled.pocetnoStanje + detaljiBean.stanjeZaPregled.trenutnoStanje}" />
 				<br />
 				<br />
-				<p:repeat value="#{detaljiBean.stanje.transakcije}" var="t">
+				<p:repeat value="#{detaljiBean.stanjeZaPregled.transakcije}" var="t">
 					<p:accordionPanel multiple="true" activeIndex="null">
 						<p:tab rendered="#{t.vrijemeUnosa != null}">
 							<f:facet name="title">
@@ -82,11 +83,12 @@
 									<br /> <br />
 									<h:outputText value="Opis plaćanja: " style="font-weight:bold" />
 									<h:outputText value="#{t.opis}" />
-									<br></br>
-									<br></br>
+									<br></br> <br></br>
 									<h:form>
+										<input type="hidden" name="list" value="true" />
 										<p:commandButton value="Obriši" style="float:right;"
-											action="#{transakcijaBean.brisi()}" update="messageGrowl"
+											action="#{detaljiBean.brisiTransakciju()}"
+											update="messageGrowl, stanjeDetalji"
 											onclick="return confirm('Jeste li sigurni da želite obrisati ovu transakciju?')">
 											<f:param name="transakcijaId" value="#{t.id}" />
 										</p:commandButton>

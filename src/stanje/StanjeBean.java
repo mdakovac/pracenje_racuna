@@ -73,4 +73,5 @@ public class StanjeBean {
 		sessionVars.updateListaStanja();
 		Message.Display("Stanje obrisano.");	
 	}
+	
 }

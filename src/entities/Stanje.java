@@ -1,7 +1,6 @@
 package entities;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,7 +23,6 @@ import org.hibernate.Session;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.query.Query;
 
-import additionalTypes.ObradenoStanje;
 import util.HibernateUtil;
 import util.Message;
 
@@ -36,27 +34,27 @@ public class Stanje {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "stanje_id")
-	private int id;
+	protected int id;
 
 	@Column(name = "naziv")
 	@NotNull
-	private String naziv;
+	protected String naziv;
 
 	@Column(name = "pocetno_stanje")
 	@NotNull
-	private BigDecimal pocetnoStanje;
+	protected BigDecimal pocetnoStanje;
 
 	@ManyToOne
 	@NotNull
 	@JoinColumn(name = "korisnik_id")
-	private Korisnik korisnik;
+	protected Korisnik korisnik;
 
 	@ManyToMany(mappedBy = "stanja")
-	private List<Transakcija> transakcije;
+	protected List<Transakcija> transakcije;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "vrijeme_unosa")
-	private Date vrijemeUnosa;
+	protected Date vrijemeUnosa;
 
 	@PrePersist
 	protected void onCreate() {
@@ -125,45 +123,9 @@ public class Stanje {
 		return s;
 	}
 	
-	public static Stanje loadTransakcije(Stanje s) {
-		Session session = HibernateUtil.getSession();
-		s = (Stanje) session.merge(s);
-		s.getTransakcije();
-		System.out.println("U sesiji: " + s.getTransakcije());
-		session.close();
-		System.out.println("Izvan sesije: " + s.getTransakcije());
-		return s;
-	}
+	
 
-	public static List<ObradenoStanje> findAll(int korisnikId) {
-		Session session = HibernateUtil.getSession();
-
-		Query<Object[]> query = session
-				.createNativeQuery("select t2.stanje_id, t2.naziv, t2.pocetno_stanje, t2.vrijeme_unosa, SUM(t.iznos) "
-						+ "from transakcija t "
-						+ "INNER JOIN stanje_transakcija t1 on t.transakcija_id = t1.transakcija_id "
-						+ "INNER JOIN stanje t2 on t2.stanje_id = t1.stanje_id " + "WHERE korisnik_id=?1 "
-						+ "GROUP BY t2.stanje_id, t2.naziv", Object[].class);
-		query.setParameter(1, korisnikId);
-
-		List<Object[]> l = query.list();
-		session.close();
-
-		List<ObradenoStanje> listaStanja = new ArrayList<ObradenoStanje>();
-
-		for (Object[] element : l) {
-			ObradenoStanje os = new ObradenoStanje();
-			os.setId((int) element[0]);
-			os.setNaziv((String) element[1]);
-			os.setPocetnoStanje(new BigDecimal(element[2].toString()));
-			os.setTrenutnoStanje(new BigDecimal(element[4].toString()));
-			os.setVrijemeUnosa((Date) element[3]);
-
-			listaStanja.add(os);
-		}
-
-		return listaStanja;
-	}
+	
 
 	public static void drop(int stanjeId) {
 		Session session = HibernateUtil.getSession();

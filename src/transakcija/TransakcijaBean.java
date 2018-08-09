@@ -3,13 +3,11 @@ package transakcija;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.RequestScoped;
-import javax.faces.context.FacesContext;
 
 import entities.Transakcija;
 import session.SessionVars;
@@ -150,16 +148,5 @@ public class TransakcijaBean implements Serializable {
 		sessionVars.updateListaStanja();
 	}
 
-	public void brisi() {
-		// dohvati id stanja za brisanje iz POST requesta
-		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		int id = Integer.parseInt(params.get("transakcijaId"));
-
-		// izbrisi iz baze
-		Transakcija.drop(id);
-
-		// update i feedback
-		sessionVars.updateListaStanja();
-		Message.Display("Transakcija obrisana.");
-	}
+	
 }
