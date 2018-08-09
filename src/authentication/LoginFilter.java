@@ -37,8 +37,8 @@ public class LoginFilter implements Filter {
 		HttpServletResponse response = (HttpServletResponse) resp;
 		HttpSession session = request.getSession(false);
 
-		String loginURI = request.getContextPath() + "/faces/index.xhtml";
-		String homeURI = request.getContextPath() + "/faces/transakcija.xhtml";
+		String loginURI = request.getContextPath() + "/index.xhtml";
+		String homeURI = request.getContextPath() + "/transakcija.xhtml";
 		
 		//System.out.println(request.getRequestURI());
 		//System.out.println(session);

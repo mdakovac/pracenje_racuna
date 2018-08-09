@@ -1,5 +1,6 @@
 eclipse.preferences.version=1
 encoding//src/entities/Stanje.java=UTF-8
+encoding//src/entities/Transakcija.java=UTF-8
 encoding//src/index/RegisterBean.java=UTF-8
 encoding//src/stanje/StanjeBean.java=UTF-8
 encoding//src/transakcija/TransakcijaBean.java=UTF-8

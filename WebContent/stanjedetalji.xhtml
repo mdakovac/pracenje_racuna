@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+<h:head>
+	<h:outputStylesheet name="css/menu.css" target="head" />
+</h:head>
+<body>
+	<div class="ui-g">
+		<p:growl id="messageGrowl" />
+
+		<!-- div za menu -->
+		<div class="ui-g-2">
+			<ui:include src="/partials/menu.xhtml" />
+		</div>
+
+		<!--  div za pregled detalja -->
+		<div class="ui-g-6" id="stanjeDetalji">
+
+			<p:panel id="basic" header="#{detaljiBean.stanjeZaPregled.naziv}"
+				style="margin-bottom:20px">
+				<h:outputText value="Id: #{detaljiBean.stanjeZaPregled.id}" />
+				<br />
+				<h:outputText
+					value="Početno stanje: #{detaljiBean.stanjeZaPregled.pocetnoStanje}" />
+				<br />
+				<br />
+				<h:outputText value="Datum i vrijeme dodavanja:" />
+				<br />
+				<h:outputText value="#{detaljiBean.stanjeZaPregled.vrijemeUnosa}" />
+				<br />
+				<br />
+				<h:outputText
+					value="Trenutno stanje: #{detaljiBean.stanjeZaPregled.pocetnoStanje + detaljiBean.stanjeZaPregled.trenutnoStanje}" />
+				<br />
+				<br />
+				<p:repeat value="#{detaljiBean.stanje.transakcije}" var="t">
+					<p:accordionPanel multiple="true" activeIndex="null">
+						<p:tab rendered="#{t.vrijemeUnosa != null}">
+							<f:facet name="title">
+								<div class="ui-g">
+									<div class="ui-g-10">
+										<h:outputText value="#{t.vrijemeUnosa}" />
+										<h:outputText value="&emsp;&emsp;&emsp;&emsp;" />
+										<h:outputText value="#{t.iznos}" />
+									</div>
+
+									<div class="ui-g-2">
+										<h:outputText value="#{detaljiBean.stanjeZaPregled.naziv}" />
+									</div>
+								</div>
+							</f:facet>
+							<div class="ui-g">
+								<div class="ui-g-6">
+									<h:outputText value="ID: " style="font-weight:bold" />
+									<h:outputText value="#{t.id}" />
+									<br /> <br />
+									<h:outputText value="Platitelj: " style="font-weight:bold" />
+									<h:outputText value="#{t.platitelj}" />
+									<br /> <br />
+									<h:outputText value="Primatelj: " style="font-weight:bold" />
+									<h:outputText value="#{t.primatelj}" />
+									<br /> <br />
+									<h:outputText value="Model: " style="font-weight:bold" />
+									<h:outputText value="#{t.model}" />
+									<br /> <br />
+									<h:outputText value="Broj računa primatelja: "
+										style="font-weight:bold" />
+									<h:outputText value="#{t.primateljRacun}" />
+								</div>
+								<div class="ui-g-6">
+									<h:outputText value="Poziv na broj odobrenja: "
+										style="font-weight:bold" />
+									<h:outputText value="#{t.brojOdobrenja}" />
+									<br /> <br />
+									<h:outputText value="Iznos: " style="font-weight:bold" />
+									<h:outputText value="#{t.iznos}" />
+									<br /> <br />
+									<h:outputText value="Opis plaćanja: " style="font-weight:bold" />
+									<h:outputText value="#{t.opis}" />
+									<br></br>
+									<br></br>
+									<h:form>
+										<p:commandButton value="Obriši" style="float:right;"
+											action="#{transakcijaBean.brisi()}" update="messageGrowl"
+											onclick="return confirm('Jeste li sigurni da želite obrisati ovu transakciju?')">
+											<f:param name="transakcijaId" value="#{t.id}" />
+										</p:commandButton>
+									</h:form>
+								</div>
+							</div>
+						</p:tab>
+					</p:accordionPanel>
+				</p:repeat>
+			</p:panel>
+
+		</div>
+	</div>
+
+</body>
+</html>

@@ -117,6 +117,23 @@ public class Stanje {
 		this.naziv = naziv;
 		this.korisnik = korisnik;
 	}
+	
+	public static Stanje get(int stanjeId) {
+		Session session = HibernateUtil.getSession();
+		Stanje s = session.get(Stanje.class, stanjeId);
+		session.close();
+		return s;
+	}
+	
+	public static Stanje loadTransakcije(Stanje s) {
+		Session session = HibernateUtil.getSession();
+		s = (Stanje) session.merge(s);
+		s.getTransakcije();
+		System.out.println("U sesiji: " + s.getTransakcije());
+		session.close();
+		System.out.println("Izvan sesije: " + s.getTransakcije());
+		return s;
+	}
 
 	public static List<ObradenoStanje> findAll(int korisnikId) {
 		Session session = HibernateUtil.getSession();

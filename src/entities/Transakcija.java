@@ -145,6 +145,14 @@ public class Transakcija {
 		this.opis = opis;
 	}
 
+	public Date getVrijemeUnosa() {
+		return vrijemeUnosa;
+	}
+
+	public void setVrijemeUnosa(Date vrijemeUnosa) {
+		this.vrijemeUnosa = vrijemeUnosa;
+	}
+
 	public Transakcija(@NotNull BigDecimal iznos, String platitelj, String primatelj,
 			String model, String primateljRacun, String brojOdobrenja, String opis, List<Stanje> stanja) {
 		super();
@@ -175,6 +183,24 @@ public class Transakcija {
 		
 		session.getTransaction().commit();
 		
+		session.close();
+	}
+	
+	public static void drop(int transakcijaId) {
+		Session session = HibernateUtil.getSession();
+		
+		session.beginTransaction();
+		
+		// obrisi dano stanje iz stanje_transakcija
+		Query<?> qu = session.createNativeQuery("DELETE FROM stanje_transakcija WHERE transakcija_id = ?1");
+		qu.setParameter(1, transakcijaId);
+		qu.executeUpdate();
+
+		// obrisi dano stanje
+		session.delete(session.load(Transakcija.class, transakcijaId));
+
+		session.getTransaction().commit();
+
 		session.close();
 	}
 }

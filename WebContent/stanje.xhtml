@@ -55,7 +55,8 @@
 			</p:panel>
 
 			<!--  popis stanja  -->
-			<p:dataGrid var="stanje" value="#{stanjeBean.sessionVars.listaStanja}"
+			<p:dataGrid var="stanje" rowIndexVar="i"
+				value="#{stanjeBean.sessionVars.listaStanja}"
 				rendered="#{param['list'] eq true}" columns="3" layout="grid"
 				rows="12" paginator="true" id="listaStanjaGrid"
 				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
@@ -69,30 +70,26 @@
 
 					<h:panelGrid columns="1"
 						style="width:100%; text-align:left; font-size:15px">
+
+						<h:outputText value="Id: #{stanje.id}" />
+						<h:outputText value="Početno stanje: #{stanje.pocetnoStanje}" /><br/>
+						<h:outputText value="Datum i vrijeme dodavanja:" />
+						<h:outputText value="#{stanje.vrijemeUnosa}" />
+						<br/>
+						<h:outputText value="Trenutno stanje: #{stanje.trenutnoStanje + stanje.pocetnoStanje}" />
+						<br/>
 						<h:form>
-							<h:outputText value="Id: #{stanje.id}" />
-							<br/>
-							<h:outputText value="Početno stanje: #{stanje.pocetnoStanje}" />
-							<br />
-							<br/>
-							<h:outputText value="Datum i vrijeme dodavanja:" /><br/>
-							<h:outputText value="#{stanje.vrijemeUnosa}" />
-							<br />
-							<br/>
-							<h:outputText value="Trenutno stanje:" /><br/>
-							<h:outputText value="#{stanje.trenutnoStanje + stanje.pocetnoStanje}" />
-							<br /><br/>
 							<input type="hidden" name="list" value="true" />
-
-
 							<p:commandButton value="Obriši" style="float:right;"
 								action="#{stanjeBean.brisi()}"
-								update="messageGrowl, listaStanjaGrid">
+								update="messageGrowl, listaStanjaGrid"
+								onclick="return confirm('Jeste li sigurni da želite obrisati ovo stanje?')">
 								<f:param name="stanjeId" value="#{stanje.id}" />
 							</p:commandButton>
 
-							<p:commandButton value="Detaljnije" style="float:left;"
-								action="#{stanjeBean.noviUnos()}" update="messageGrowl" />
+							<b><p:link outcome="stanjedetalji" value="Pregledaj detalje">
+									<f:param name="index" value="#{i}" />
+								</p:link></b>
 						</h:form>
 					</h:panelGrid>
 				</p:panel>
