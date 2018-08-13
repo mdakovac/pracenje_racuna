@@ -8,9 +8,13 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 
+import org.hibernate.Session;
+import org.primefaces.event.RowEditEvent;
+
 import additionalTypes.ObradenoStanje;
 import entities.Transakcija;
 import session.SessionVars;
+import util.HibernateUtil;
 import util.Message;
 
 @ManagedBean(name = "detaljiBean")
@@ -24,12 +28,13 @@ public class DetaljiBean {
 	private int index;
 
 	public DetaljiBean() {
-		
+		System.out.println("DetaljiBean konstruktor");
 	}
 	
 	// ManagedPropertyju se ne može pristupiti u konstruktoru
 	@PostConstruct
 	public void init() { // Note: method name is your choice.
+		System.out.println("DetaljiBean init");
 		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
 		index = Integer.parseInt(params.get("index"));
 		
@@ -39,6 +44,7 @@ public class DetaljiBean {
 	private void updateStanjeZaPregled() {
 		stanjeZaPregled = sessionVars.getListaStanja().get(index);
 		stanjeZaPregled.loadTransakcije();
+		stanjeZaPregled.removeTransakcija(0);
 	}
 
 	public ObradenoStanje getStanjeZaPregled() {
@@ -65,11 +71,7 @@ public class DetaljiBean {
 		this.index = index;
 	}
 	
-	public void brisiTransakciju() {
-		// dohvati id stanja za brisanje iz POST requesta
-		Map<String, String> params = FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap();
-		int id = Integer.parseInt(params.get("transakcijaId"));
-
+	public void brisiTransakciju(int id) {
 		// izbrisi iz baze
 		Transakcija.drop(id);
 
@@ -79,6 +81,27 @@ public class DetaljiBean {
 		
 		updateStanjeZaPregled();
 	}
+	
+	public void onRowEdit(RowEditEvent event) {
+		Transakcija t = (Transakcija) event.getObject();
+		
+		Session s = HibernateUtil.getSession();
+		s.beginTransaction();
+		t = (Transakcija) s.merge(t);
+		s.getTransaction().commit();
+		s.close();
+		
+		
+		sessionVars.updateListaStanja();
+		updateStanjeZaPregled();
+		
+		Message.Display("Ažuriranje uspješno.");
+    }
+
+    public void onRowCancel(RowEditEvent event) {
+    	
+        Message.Display("Ažuriranje otkazano.");
+    }
 	
 
 }

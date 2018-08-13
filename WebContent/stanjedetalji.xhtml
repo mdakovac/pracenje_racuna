@@ -14,92 +14,127 @@
 		<p:growl id="messageGrowl" />
 
 		<!-- div za menu -->
-		<div class="ui-g-2">
+		<div class="ui-g-2" style="overflow-x: hidden; overflow-y: hidden;">
 			<ui:include src="/partials/menu.xhtml" />
 		</div>
 
 		<!--  div za pregled detalja -->
-		<div class="ui-g-6">
+		<div class="ui-g-10">
+			<h:form id="form">
+				<p:panel id="basic" header="#{detaljiBean.stanjeZaPregled.naziv}"
+					style="margin-bottom:20px">
+					<br />
+					<h:outputText value="Trenutno stanje: " style="font-weight:bold"/>
+					<h:outputText id="sad" value="#{detaljiBean.stanjeZaPregled.trenutnoStanje}" />
+					<br />
+					<br />
+					<h:outputText value="Početno stanje: " style="font-weight:bold"/>
+					<h:outputText value="#{detaljiBean.stanjeZaPregled.pocetnoStanje}" />
+					<br />
+					<br />
+					<h:outputText value="Datum unosa: " style="font-weight:bold"/>
+					<h:outputText value="#{detaljiBean.stanjeZaPregled.vrijemeUnosa}" />
+					<br />
+					<br />
+					<p:dataTable id="popisTransakcija" var="t"
+						value="#{detaljiBean.stanjeZaPregled.transakcije}" editable="true"
+						style="margin-bottom:20px">
 
-			<p:panel id="stanjeDetalji"
-				header="#{detaljiBean.stanjeZaPregled.naziv}"
-				style="margin-bottom:20px">
-				<h:outputText value="Id: #{detaljiBean.stanjeZaPregled.id}" />
-				<br />
-				<h:outputText
-					value="Početno stanje: #{detaljiBean.stanjeZaPregled.pocetnoStanje}" />
-				<br />
-				<br />
-				<h:outputText value="Datum i vrijeme dodavanja:" />
-				<br />
-				<h:outputText value="#{detaljiBean.stanjeZaPregled.vrijemeUnosa}" />
-				<br />
-				<br />
-				<h:outputText
-					value="Trenutno stanje: #{detaljiBean.stanjeZaPregled.pocetnoStanje + detaljiBean.stanjeZaPregled.trenutnoStanje}" />
-				<br />
-				<br />
-				<p:repeat value="#{detaljiBean.stanjeZaPregled.transakcije}" var="t">
-					<p:accordionPanel multiple="true" activeIndex="null">
-						<p:tab rendered="#{t.vrijemeUnosa != null}">
-							<f:facet name="title">
-								<div class="ui-g">
-									<div class="ui-g-10">
-										<h:outputText value="#{t.vrijemeUnosa}" />
-										<h:outputText value="&emsp;&emsp;&emsp;&emsp;" />
-										<h:outputText value="#{t.iznos}" />
-									</div>
+						<p:ajax event="rowEdit" listener="#{detaljiBean.onRowEdit}"
+							update="messageGrowl, form:sad" execute="@form"/>
+						<p:ajax event="rowEditCancel" listener="#{detaljiBean.onRowCancel}"
+							update="messageGrowl" />
 
-									<div class="ui-g-2">
-										<h:outputText value="#{detaljiBean.stanjeZaPregled.naziv}" />
-									</div>
-								</div>
-							</f:facet>
-							<div class="ui-g">
-								<div class="ui-g-6">
-									<h:outputText value="ID: " style="font-weight:bold" />
-									<h:outputText value="#{t.id}" />
-									<br /> <br />
-									<h:outputText value="Platitelj: " style="font-weight:bold" />
-									<h:outputText value="#{t.platitelj}" />
-									<br /> <br />
-									<h:outputText value="Primatelj: " style="font-weight:bold" />
-									<h:outputText value="#{t.primatelj}" />
-									<br /> <br />
-									<h:outputText value="Model: " style="font-weight:bold" />
-									<h:outputText value="#{t.model}" />
-									<br /> <br />
-									<h:outputText value="Broj računa primatelja: "
-										style="font-weight:bold" />
-									<h:outputText value="#{t.primateljRacun}" />
-								</div>
-								<div class="ui-g-6">
-									<h:outputText value="Poziv na broj odobrenja: "
-										style="font-weight:bold" />
-									<h:outputText value="#{t.brojOdobrenja}" />
-									<br /> <br />
-									<h:outputText value="Iznos: " style="font-weight:bold" />
+						<p:column headerText="Iznos">
+							<p:cellEditor>
+								<f:facet name="output">
 									<h:outputText value="#{t.iznos}" />
-									<br /> <br />
-									<h:outputText value="Opis plaćanja: " style="font-weight:bold" />
-									<h:outputText value="#{t.opis}" />
-									<br></br> <br></br>
-									<h:form>
-										<input type="hidden" name="list" value="true" />
-										<p:commandButton value="Obriši" style="float:right;"
-											action="#{detaljiBean.brisiTransakciju()}"
-											update="messageGrowl, stanjeDetalji"
-											onclick="return confirm('Jeste li sigurni da želite obrisati ovu transakciju?')">
-											<f:param name="transakcijaId" value="#{t.id}" />
-										</p:commandButton>
-									</h:form>
-								</div>
-							</div>
-						</p:tab>
-					</p:accordionPanel>
-				</p:repeat>
-			</p:panel>
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{t.iznos}" style="width:100%" />
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
 
+						<p:column headerText="Datum">
+									<h:outputText value="#{t.vrijemeUnosa}" />
+						</p:column>
+
+						<p:column headerText="Platitelj">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{t.platitelj}" />
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{t.platitelj}" style="width:100%" />
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+
+						<p:column headerText="Primatelj">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{t.primatelj}" />
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{t.primatelj}" style="width:100%" />
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+
+						<p:column headerText="Model" style="width:3.5%">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{t.model}" />
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{t.model}" style="width:100%" />
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+
+						<p:column headerText="Broj računa primatelja" style="width:15%">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{t.primateljRacun}" />
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{t.primateljRacun}" style="width:100%" />
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+
+						<p:column headerText="Poziv na broj odobrenja" style="width:17%">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{t.brojOdobrenja}" />
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{t.brojOdobrenja}" style="width:100%" />
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+
+						<p:column headerText="Opis">
+							<p:cellEditor>
+								<f:facet name="output">
+									<h:outputText value="#{t.opis}" />
+								</f:facet>
+								<f:facet name="input">
+									<p:inputText value="#{t.opis}" style="width:100%" />
+								</f:facet>
+							</p:cellEditor>
+						</p:column>
+
+						<p:column style="width:32px">
+							<p:rowEditor style="background-color:white"/>
+							<p:commandButton icon="ui-icon-disk" update="@form, messageGrowl"
+								action="#{detaljiBean.brisiTransakciju(t.id)}" />
+
+						</p:column>
+					</p:dataTable>
+				</p:panel>
+			</h:form>
 		</div>
 	</div>
 

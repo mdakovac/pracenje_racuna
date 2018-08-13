@@ -8,3 +8,7 @@
 .menuItem:hover {
 	background-color: cyan;
 }
+
+.someCssClassName {
+	background-image: url(resources/images/trash-can-icon.png)
+}

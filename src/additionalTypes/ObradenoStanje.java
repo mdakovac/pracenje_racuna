@@ -61,4 +61,8 @@ public class ObradenoStanje extends Stanje{
 		this.setTransakcije(s.getTransakcije());
 		session.close();
 	}
+	
+	public void removeTransakcija(int index) {
+		this.transakcije.remove(index);
+	}
 }

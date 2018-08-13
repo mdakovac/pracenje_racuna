@@ -166,6 +166,13 @@ public class Transakcija {
 		this.stanja = stanja;
 	}
 	
+	@Override
+	public String toString() {
+		return "Transakcija [id=" + id + ", stanja=" + stanja + ", iznos=" + iznos + ", platitelj=" + platitelj
+				+ ", primatelj=" + primatelj + ", model=" + model + ", primateljRacun=" + primateljRacun
+				+ ", brojOdobrenja=" + brojOdobrenja + ", opis=" + opis + ", vrijemeUnosa=" + vrijemeUnosa + "]";
+	}
+
 	public static void save(List<String> odabranaStanja, int korisnikId, BigDecimal iznos, String platitelj, String primatelj, String model, String primateljRacun, String brojOdobrenja, String opis) {
 		Session session = HibernateUtil.getSession();
 		
